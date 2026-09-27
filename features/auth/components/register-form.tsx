@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -36,7 +35,6 @@ const registerSchema = z
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
-  const router = useRouter();
   const [socialPending, setSocialPending] = useState(false);
 
   const form = useForm<RegisterFormValues>({
@@ -56,7 +54,7 @@ export function RegisterForm() {
       setSocialPending(true);
       await authClient.signIn.social({
         provider,
-        callbackURL: "/",
+        callbackURL: "/locations",
       });
     } catch {
       toast.error(`Unable to continue with ${provider}`);
@@ -71,11 +69,11 @@ export function RegisterForm() {
           name: values.name,
           email: values.email,
           password: values.password,
-          callbackURL: "/",
+          callbackURL: "/locations",
         },
         {
           onSuccess: () => {
-            router.replace("/");
+            window.location.assign(new URL("/locations", window.location.origin));
           },
           onError: (ctx) => {
             const message = (ctx?.error?.message ?? "").toLowerCase();
