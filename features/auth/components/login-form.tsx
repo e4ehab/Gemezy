@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,7 +27,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
-  const router = useRouter();
   const [isSocialPending, setIsSocialPending] = useState(false);
 
   const form = useForm<LoginFormValues>({
@@ -44,7 +42,7 @@ export function LoginForm() {
     await authClient.signIn.social(
       {
         provider: "github",
-        callbackURL: "/",
+        callbackURL: "/locations",
       },
       {
         onError: () => {
@@ -60,7 +58,7 @@ export function LoginForm() {
     await authClient.signIn.social(
       {
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/locations",
       },
       {
         onError: () => {
@@ -76,11 +74,11 @@ export function LoginForm() {
       {
         email: values.email,
         password: values.password,
-        callbackURL: "/",
+        callbackURL: "/locations",
       },
       {
         onSuccess: () => {
-          router.replace("/");
+          window.location.assign(new URL("/locations", window.location.origin));
         },
         onError: (ctx) => {
           toast.error(ctx.error.message);

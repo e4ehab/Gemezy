@@ -1,0 +1,34 @@
+.graphite {
+  color-scheme: dark;
+  --background: #202124;
+  --foreground: oklch(0.96 0 0);
+  --card: #050505;
+  --card-foreground: oklch(0.96 0 0);
+  --popover: #171819;
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.86 0.14 174);
+  --primary-foreground: oklch(0.22 0.035 190);
+  --secondary: oklch(0.3 0.008 255);
+  --secondary-foreground: oklch(0.94 0.01 190);
+  --muted: oklch(0.29 0.008 255);
+  --muted-foreground: oklch(0.72 0.018 190);
+  --accent: oklch(0.37 0.055 185);
+  --accent-foreground: oklch(0.96 0.015 185);
+  --destructive: oklch(0.65 0.2 25);
+  --border: oklch(0.9 0.01 190 / 12%);
+  --input: oklch(0.9 0.01 190 / 16%);
+  --ring: oklch(0.82 0.12 174);
+  --chart-1: oklch(0.82 0.13 174);
+  --chart-2: oklch(0.68 0.12 195);
+  --chart-3: oklch(0.76 0.12 100);
+  --chart-4: oklch(0.7 0.15 45);
+  --chart-5: oklch(0.68 0.13 245);
+  --sidebar: #171819;
+  --sidebar-foreground: oklch(0.94 0.01 190);
+  --sidebar-primary: oklch(0.82 0.13 174);
+  --sidebar-primary-foreground: oklch(0.2 0.035 190);
+  --sidebar-accent: oklch(0.32 0.035 185);
+  --sidebar-accent-foreground: oklch(0.96 0.015 185);
+  --sidebar-border: oklch(0.9 0.01 190 / 12%);
+  --sidebar-ring: oklch(0.82 0.12 174);
+}
