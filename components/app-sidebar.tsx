@@ -35,9 +35,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
   { title: "My Locations", icon: BirdhouseIcon, url: "/locations" },
@@ -46,16 +48,29 @@ const menuItems = [
 ];
 
 function isPathActive(pathname: string, url: string) {
-  return pathname === url || pathname.startsWith(`${url}/`);
+  if (pathname === url) return true;
+  const coveredByMoreSpecificItem = menuItems.some(
+    (item) =>
+      item.url !== url &&
+      item.url.startsWith(`${url}/`) &&
+      (pathname === item.url || pathname.startsWith(`${item.url}/`)),
+  );
+  if (coveredByMoreSpecificItem) return false;
+  return pathname.startsWith(`${url}/`);
 }
+
+const collapsedIconButton =
+  "group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:rounded-2xl group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:shadow-none group-data-[collapsible=icon]:[&_svg]:size-5";
 
 export const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { state } = useSidebar();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session } = authClient.useSession();
   const profileName = session?.user.name || "Profile";
   const profileInitial = profileName.charAt(0).toUpperCase();
+  const isCollapsed = state === "collapsed";
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -71,18 +86,31 @@ export const AppSidebar = () => {
     }
   };
 
-  const navButtonClass =
-    "h-12 rounded-xl px-3 text-lg font-medium text-sidebar-foreground/90 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground [&_svg]:size-6";
+  const navButtonClass = cn(
+    "h-12 rounded-xl px-3 text-lg font-medium text-sidebar-foreground/90 transition-colors",
+    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground [&_svg]:size-6",
+    "data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground",
+    collapsedIconButton,
+    "group-data-[collapsible=icon]:text-sidebar-foreground/75",
+    "group-data-[collapsible=icon]:hover:bg-sidebar-accent/80 group-data-[collapsible=icon]:hover:text-sidebar-accent-foreground",
+    "group-data-[collapsible=icon]:data-active:bg-sidebar-accent group-data-[collapsible=icon]:data-active:text-sidebar-accent-foreground",
+    "group-data-[collapsible=icon]:data-active:ring-1 group-data-[collapsible=icon]:data-active:ring-sidebar-border",
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
-      <SidebarHeader className="px-3 pb-4 pt-5">
+      <SidebarHeader className="px-3 pb-3 pt-5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
+              tooltip="Gemezy"
               isActive={false}
               render={<Link href="/locations" prefetch />}
-              className="h-14 rounded-xl px-3 text-sidebar-foreground hover:bg-sidebar-accent [&_svg]:size-9"
+              className={cn(
+                "h-14 rounded-xl px-3 text-sidebar-foreground hover:bg-sidebar-accent",
+                collapsedIconButton,
+                "group-data-[collapsible=icon]:size-11! group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:hover:bg-transparent group-data-[collapsible=icon]:shadow-none",
+              )}
             >
               <Image
                 src="/logos/logo.svg"
@@ -90,32 +118,36 @@ export const AppSidebar = () => {
                 width={36}
                 height={36}
                 priority
-                className="size-9 object-contain"
+                className="size-9 object-contain group-data-[collapsible=icon]:size-8!"
               />
-              <span className="text-lg font-semibold">Gemezy</span>
+              <span className="text-lg font-semibold group-data-[collapsible=icon]:sr-only">
+                Gemezy
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
 
-      <div className="px-4">
-        <div className="h-px w-full bg-sidebar-border" />
+      <div className="px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-1">
+        <div className="h-px w-full bg-sidebar-border group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:w-8" />
       </div>
 
-      <SidebarContent className="px-2 pt-3">
+      <SidebarContent className="px-2 pt-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-2">
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1.5">
+            <SidebarMenu className="gap-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     tooltip={item.title}
                     isActive={isPathActive(pathname, item.url)}
                     render={<Link href={item.url} prefetch />}
-                    className={`${navButtonClass} data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground`}
+                    className={navButtonClass}
                   >
                     <item.icon />
-                    <span>{item.title}</span>
+                    <span className="group-data-[collapsible=icon]:sr-only">
+                      {item.title}
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -124,25 +156,30 @@ export const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="gap-1.5 p-3">
-        <div className="px-1 pb-1">
-          <Separator className="bg-sidebar-border" />
+      <SidebarFooter className="gap-1.5 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:pb-4">
+        <div className="px-1 pb-1 group-data-[collapsible=icon]:px-0">
+          <Separator className="bg-sidebar-border group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:w-8" />
         </div>
-        <SidebarMenu className="gap-1.5">
+        <SidebarMenu className="gap-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2">
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={profileName}
               isActive={isPathActive(pathname, "/profile")}
               render={<Link href="/profile" prefetch />}
-              className={`${navButtonClass} data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground`}
+              className={cn(
+                navButtonClass,
+                "group-data-[collapsible=icon]:rounded-full",
+              )}
             >
-              <Avatar className="size-7 border border-sidebar-border">
+              <Avatar className="size-7 border border-sidebar-border group-data-[collapsible=icon]:size-9 group-data-[collapsible=icon]:border-0">
                 <AvatarImage src={session?.user.image ?? undefined} alt="" />
-                <AvatarFallback className="bg-sidebar-accent text-xs text-sidebar-foreground">
+                <AvatarFallback className="bg-sidebar-accent text-xs font-medium text-sidebar-foreground">
                   {profileInitial}
                 </AvatarFallback>
               </Avatar>
-              <span>Profile & Settings</span>
+              <span className="group-data-[collapsible=icon]:sr-only">
+                Profile & Settings
+              </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
@@ -156,11 +193,14 @@ export const AppSidebar = () => {
                 }
               >
                 <EllipsisIcon />
-                <span>More</span>
+                <span className="group-data-[collapsible=icon]:sr-only">
+                  More
+                </span>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                side="top"
-                align="start"
+                side={isCollapsed ? "right" : "top"}
+                align="end"
+                sideOffset={isCollapsed ? 10 : 4}
                 className="w-56 border-border bg-popover text-popover-foreground"
               >
                 <ThemeSwitcher />

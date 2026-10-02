@@ -13,3 +13,7 @@ npx inngest-cli@latest dev  --> install inngest
 npm run inngest:dev         --> run inngest in local host
 
 npm run all                 --> run all the processes in one terminal
+
+
+----
+remember to add error state
