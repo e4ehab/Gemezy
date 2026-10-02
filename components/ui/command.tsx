@@ -16,6 +16,14 @@ import {
   InputGroupAddon,
 } from "@/components/ui/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
+import { useIsMobile } from "@/hooks/use-mobile"
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer"
 
 function Command({
   className,
@@ -63,6 +71,66 @@ function CommandDialog({
         {children}
       </DialogContent>
     </Dialog>
+  )
+}
+
+type CommandResponsiveDialogProps = {
+  open?: boolean
+  defaultOpen?: boolean
+  onOpenChange?: (open: boolean) => void
+  title?: string
+  description?: string
+  children: React.ReactNode
+  className?: string
+  shouldFilter?: boolean
+  showCloseButton?: boolean
+}
+
+function CommandResponsiveDialog({
+  open,
+  defaultOpen,
+  onOpenChange,
+  title = "Command Palette",
+  description = "Search for a command to run...",
+  children,
+  className,
+  shouldFilter = true,
+  showCloseButton = true,
+}: CommandResponsiveDialogProps) {
+  const isMobile = useIsMobile()
+
+  if (isMobile) {
+    return (
+      <Drawer
+        open={open}
+        defaultOpen={defaultOpen}
+        onOpenChange={onOpenChange}
+      >
+        <DrawerContent className="overflow-hidden p-0">
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
+          </DrawerHeader>
+          <Command shouldFilter={shouldFilter} className="max-h-[80dvh]">
+            {children}
+          </Command>
+        </DrawerContent>
+      </Drawer>
+    )
+  }
+
+  return (
+    <CommandDialog
+      open={open}
+      defaultOpen={defaultOpen}
+      onOpenChange={onOpenChange}
+      title={title}
+      description={description}
+      className={className}
+      showCloseButton={showCloseButton}
+    >
+      <Command shouldFilter={shouldFilter}>{children}</Command>
+    </CommandDialog>
   )
 }
 
@@ -186,6 +254,7 @@ function CommandShortcut({
 export {
   Command,
   CommandDialog,
+  CommandResponsiveDialog,
   CommandInput,
   CommandList,
   CommandEmpty,

@@ -13,7 +13,15 @@ export function ThemeProvider({
   ...props
 }: ComponentProps<typeof NextThemesProvider>) {
   return (
-    <NextThemesProvider value={themeValues} {...props}>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      disableTransitionOnChange
+      enableSystem
+      themes={themes.map(({ id }) => id)}
+      value={themeValues}
+      {...props}
+    >
       {children}
     </NextThemesProvider>
   );
