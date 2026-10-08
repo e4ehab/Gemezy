@@ -1,6 +1,6 @@
 // app/(dashboard)/layout.tsx
 import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardNavbar } from "@/components/dashboard/app-navbar";
+import { DashboardNavbar } from "@/components/navbar/app-navbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 const Layout = ({ children }: { children: React.ReactNode; }) => {

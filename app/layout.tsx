@@ -21,8 +21,8 @@ const cinzel = Cinzel({
 });
 
 export const metadata: Metadata = {
-  title: "ehab's portfolio",
-  description: "Work smart, think different",
+  title: "Gemezy",
+  description: "save your hidden gems and share them with the world",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -37,7 +37,12 @@ export default function RootLayout({
 }>) {
   return (
     <TRPCReactProvider>
-      <html lang="en" className="bg-background" style={{ backgroundColor: 'var(--background)' }}>
+      <html
+        lang="en"
+        className="bg-background"
+        style={{ backgroundColor: 'var(--background)' }}
+        suppressHydrationWarning
+      >
         <body className={`${inter.variable} ${cinzel.variable} antialiased bg-background min-h-screen`}>
           <NuqsAdapter>
             <ThemeProvider>
