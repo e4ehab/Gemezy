@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { GeneratedAvatar } from "@/components/dashboard/generated-avatar";
+import { GeneratedAvatar } from "@/components/navbar/generated-avatar";
 import { ChevronDownIcon, CreditCardIcon, LogOutIcon } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 

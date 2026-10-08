@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { PanelLeftIcon, PanelLeftCloseIcon, SearchIcon, XIcon } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
-import { DashboardCommand } from "@/components/dashboard/app-command";
+import { DashboardCommand } from "@/components/navbar/app-command";
 import { useEffect, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -16,12 +16,6 @@ export const DashboardNavbar = () => {
   const handleSearchChange = (value: string) => setSearch(value);
 
   const [commandOpen, setCommandOpen] = useState(false);
-  const [isMac, setIsMac] = useState(true);
-
-  useEffect(() => {
-    // crude but effective platform check for shortcut label
-    setIsMac(/Mac|iPod|iPhone|iPad/.test(navigator.platform));
-  }, []);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -112,7 +106,7 @@ export const DashboardNavbar = () => {
               </div>
 
               <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
-                {isMac ? <span className="text-xs">&#8984;</span> : "Ctrl+"}K
+                <span className="text-xs">Ctrl/&#8984;</span>K
               </kbd>
             </Button>
           )}

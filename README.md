@@ -17,3 +17,12 @@ npm run all                 --> run all the processes in one terminal
 
 ----
 remember to add error state
+share my id with friends via whatsapp
+share locations with others ( menu wil pop up when sharing the location with other)
+
+add sharing locations with other (enter the user id to share the location with , or choose from friends)
+
+make each and every new user have an id, and give the ability to have share button for sharing the id via whatsapp or using the airdrop which will pop up the user profile on the other device and show all the locations he saved
+
+for account Id regex -> GEM@12345678
+for location ID regex -> LOC@123456789
