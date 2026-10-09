@@ -13,30 +13,53 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  publicId      String    @unique(map: "user_publicId_key") @default(dbgenerated("generate_user_public_id()"))
+  id            String   @id
+  publicId      String   @unique(map: "user_publicId_key") @default(dbgenerated("generate_user_public_id()"))
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  visibility LocationVisibility @default(PRIVATE)
-
-  sessions      Session[]
-  accounts      Account[]
-  account_type    String?   @default("public")
+  sessions       Session[]
+  accounts       Account[]
+  savedLocations SavedLocation[]
+  account_type   String?         @default("public")
 
   @@unique([email])
   @@map("user")
 }
 
+model SavedLocation {
+  id             String             @id @default(cuid())
+  publicId       String             @unique(map: "saved_location_publicId_key")
+  shareId        String             @unique(map: "saved_location_shareId_key")
+  visibility     LocationVisibility @default(PRIVATE)
+  name           String
+  description    String?
+  tags           String[]           @default([])
+  images         String[]           @default([])
+  imagePositionX Int                @default(50)
+  imagePositionY Int                @default(50)
+  address        String?
+  mapsUrl        String
+  latitude       Float?
+  longitude      Float?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("saved_location")
+}
+
 enum LocationVisibility {
-  PUBLIC     // 🌎 Anyone can discover it
-  PRIVATE    // 🔒 Only me 
-  SHARED     // 👥 Specific people
-  Unlisted   // 🔗 Anyone with the link / location Id
+  PUBLIC // 🌎 Anyone can discover it
+  PRIVATE // 🔒 Only me 
+  SHARED // 👥 Specific people
+  Unlisted // 🔗 Anyone with the link / location Id
 }
 
 model Session {
@@ -73,9 +96,9 @@ model Account {
 
   issuer String?
 
+  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
   @@index([userId])
   @@map("account")
-  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
 }
 
 model Verification {

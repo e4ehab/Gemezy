@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { LoadingState } from '@/components/states/loading-state';
 import { HydrateClient } from '@/trpc/server';
 import { prefetchProfile } from '@/features/profile/server/prefetch';
 import { Profile } from '@/features/profile/components/profile';
@@ -10,7 +11,14 @@ export default async function ProfilePage() {
 
   return (
     <HydrateClient>
-      <Suspense fallback={<p className="p-6 text-muted-foreground">Loading profile...</p>}>
+      <Suspense
+        fallback={
+          <LoadingState
+            title="Loading your profile"
+            description="Getting your account details ready."
+          />
+        }
+      >
         <Profile />
       </Suspense>
     </HydrateClient>
