@@ -26,3 +26,28 @@ make each and every new user have an id, and give the ability to have share butt
 
 for account Id regex -> GEM@12345678
 for location ID regex -> LOC@123456789
+
+Google Maps locations
+---------------------
+To save a Google Maps place, open the place in Google Maps, choose Share, copy its link, and paste the link into Gemezy. No Google Maps API key is required.
+
+Location image uploads
+----------------------
+Optional location images are stored in Cloudinary. Configure these server-side environment variables:
+
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+Keep the API secret server-side and never prefix it with NEXT_PUBLIC_.
+
+Location sharing
+----------------
+Locations are private by default. Change an individual location to **Unlisted** to share it by a private link, or **Public** to include it in Explore. Public share pages expose only the location name, photos, and Google Maps link; notes, tags, and exact coordinates remain private. Unlisted pages are excluded from search indexing. Share links can be copied, sent through WhatsApp, or displayed as a locally generated QR code.
+
+
+TODOS
+------
+. Improve Explore as it grows. Add search, sorting, and pagination rather than loading every public location at once.
+
+. enhance the searching methodology

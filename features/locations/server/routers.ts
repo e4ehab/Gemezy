@@ -1,29 +1,263 @@
 import prisma from '@/lib/db';
-import { createTRPCRouter, baseProcedure } from '@/trpc/init';
+import { TRPCError } from '@trpc/server';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import { randomBytes, randomInt } from 'node:crypto';
+import {
+  getGoogleMapsUrl,
+  getLocationRouteSlugs,
+  isGoogleMapsShareUrl,
+} from '@/features/locations/utils';
+import { LOCATION_VISIBILITIES } from '@/features/locations/constants';
 import { z } from 'zod';
 
+const createLocationInput = z.discriminatedUnion('source', [
+  z.object({
+    source: z.literal('CURRENT'),
+    name: z.string().trim().min(2).max(100),
+    description: z.string().trim().max(500).optional(),
+    tags: z.array(z.string().trim().min(1).max(30)).max(10).default([]),
+    images: z.array(z.string().url().max(2000)).max(5).default([]),
+    imagePositionX: z.number().int().min(0).max(100).default(50),
+    imagePositionY: z.number().int().min(0).max(100).default(50),
+    visibility: z.enum(LOCATION_VISIBILITIES).default('PRIVATE'),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+  }),
+  z.object({
+    source: z.literal('MAPS'),
+    name: z.string().trim().min(2).max(100),
+    description: z.string().trim().max(500).optional(),
+    tags: z.array(z.string().trim().min(1).max(30)).max(10).default([]),
+    images: z.array(z.string().url().max(2000)).max(5).default([]),
+    imagePositionX: z.number().int().min(0).max(100).default(50),
+    imagePositionY: z.number().int().min(0).max(100).default(50),
+    visibility: z.enum(LOCATION_VISIBILITIES).default('PRIVATE'),
+    address: z.string().trim().min(1).max(500).optional(),
+    mapsUrl: z.string().url().max(2000),
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
+  }),
+]);
+const updateLocationFields = z.object({
+  slug: z.string().min(1).max(180),
+  name: z.string().trim().min(2).max(100),
+  description: z.string().trim().max(500).optional(),
+  tags: z.array(z.string().trim().min(1).max(30)).max(10),
+  images: z.array(z.string().url().max(2000)).max(5),
+  imagePositionX: z.number().int().min(0).max(100),
+  imagePositionY: z.number().int().min(0).max(100),
+  visibility: z.enum(LOCATION_VISIBILITIES),
+});
+const updateLocationInput = z.discriminatedUnion('source', [
+  updateLocationFields.extend({
+    source: z.literal('CURRENT'),
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+  }),
+  updateLocationFields.extend({
+    source: z.literal('MAPS'),
+    mapsUrl: z.string().url().max(2000),
+  }),
+]);
+
+function isUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'P2002'
+  );
+}
+
 export const locationsRouter = createTRPCRouter({
-  getMany: baseProcedure
+  getMany: protectedProcedure
+    .input(z.object({ search: z.string().trim().max(100).optional() }).default({}))
+    .query(async ({ ctx, input }) => {
+      const locations = await prisma.savedLocation.findMany({
+        where: { userId: ctx.session.user.id },
+        orderBy: { createdAt: 'desc' },
+      });
+      const routeSlugs = getLocationRouteSlugs(locations);
+      const normalizedQuery = input.search?.replace(/^#/, '').trim().toLowerCase();
+
+      return locations
+        .filter((location) => {
+          if (!normalizedQuery) return true;
+          return [
+            location.name,
+            location.description,
+            location.publicId,
+            location.address,
+            ...location.tags,
+          ].some((value) => value?.toLowerCase().includes(normalizedQuery));
+        })
+        .map((location) => ({
+          ...location,
+          slug: routeSlugs.get(location.publicId)!,
+        }));
+    }),
+  getBySlug: protectedProcedure
+    .input(z.object({ slug: z.string().min(1).max(180) }))
+    .query(async ({ ctx, input }) => {
+      const locations = await prisma.savedLocation.findMany({
+        where: { userId: ctx.session.user.id },
+      });
+      const routeSlugs = getLocationRouteSlugs(locations);
+      const location = locations.find(
+        (item) =>
+          routeSlugs.get(item.publicId) === input.slug ||
+          item.publicId.toLowerCase() === input.slug.toLowerCase(),
+      );
+
+      if (!location) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Location not found.' });
+      }
+
+      return location;
+    }),
+  updateVisibility: protectedProcedure
     .input(
       z.object({
-        page: z.number().min(1).default(1),
-        pageSize: z.number().min(1).max(100).default(10),
+        slug: z.string().min(1).max(180),
+        visibility: z.enum(LOCATION_VISIBILITIES),
       }),
     )
-    .query(async ({ input }) => {
-      const users = await prisma.user.findMany({
-        skip: (input.page - 1) * input.pageSize,
-        take: input.pageSize,
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-          createdAt: true,
-        },
+    .mutation(async ({ ctx, input }) => {
+      const locations = await prisma.savedLocation.findMany({
+        where: { userId: ctx.session.user.id },
       });
+      const routeSlugs = getLocationRouteSlugs(locations);
+      const location = locations.find(
+        (item) =>
+          routeSlugs.get(item.publicId) === input.slug ||
+          item.publicId.toLowerCase() === input.slug.toLowerCase(),
+      );
+      if (!location) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Location not found.' });
+      }
 
-      return users;
+      const updated = await prisma.savedLocation.update({
+        where: { id: location.id, userId: ctx.session.user.id },
+        data: { visibility: input.visibility },
+        select: { visibility: true },
+      });
+      return updated;
     }),
+  update: protectedProcedure.input(updateLocationInput).mutation(async ({ ctx, input }) => {
+    const locations = await prisma.savedLocation.findMany({
+      where: { userId: ctx.session.user.id },
+    });
+    const routeSlugs = getLocationRouteSlugs(locations);
+    const location = locations.find(
+      (item) =>
+        routeSlugs.get(item.publicId) === input.slug ||
+        item.publicId.toLowerCase() === input.slug.toLowerCase(),
+    );
+    if (!location) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Location not found.' });
+    }
+    if (input.source === 'MAPS' && !isGoogleMapsShareUrl(input.mapsUrl)) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Paste a valid Google Maps share link, such as https://share.google/...',
+      });
+    }
+
+    const updatedLocation = await prisma.savedLocation.update({
+      where: { id: location.id, userId: ctx.session.user.id },
+      data: {
+        name: input.name,
+        description: input.description || null,
+        tags: input.tags,
+        images: input.images,
+        imagePositionX: input.imagePositionX,
+        imagePositionY: input.imagePositionY,
+        visibility: input.visibility,
+        mapsUrl:
+          input.source === 'CURRENT'
+            ? getGoogleMapsUrl(`${input.latitude},${input.longitude}`)
+            : input.mapsUrl,
+        latitude: input.source === 'CURRENT' ? input.latitude : null,
+        longitude: input.source === 'CURRENT' ? input.longitude : null,
+        address: input.source === 'CURRENT' ? null : location.address,
+      },
+    });
+    const updatedLocations = locations.map((item) =>
+      item.id === updatedLocation.id ? updatedLocation : item,
+    );
+
+    return {
+      ...updatedLocation,
+      slug: getLocationRouteSlugs(updatedLocations).get(updatedLocation.publicId)!,
+    };
+  }),
+  delete: protectedProcedure
+    .input(z.object({ slug: z.string().min(1).max(180) }))
+    .mutation(async ({ ctx, input }) => {
+      const locations = await prisma.savedLocation.findMany({
+        where: { userId: ctx.session.user.id },
+      });
+      const routeSlugs = getLocationRouteSlugs(locations);
+      const location = locations.find(
+        (item) =>
+          routeSlugs.get(item.publicId) === input.slug ||
+          item.publicId.toLowerCase() === input.slug.toLowerCase(),
+      );
+      if (!location) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Location not found.' });
+      }
+
+      await prisma.savedLocation.delete({
+        where: { id: location.id, userId: ctx.session.user.id },
+      });
+      return { success: true };
+    }),
+  create: protectedProcedure.input(createLocationInput).mutation(async ({ ctx, input }) => {
+      if (input.source === 'MAPS' && !isGoogleMapsShareUrl(input.mapsUrl)) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Paste a valid Google Maps share link, such as https://share.google/...',
+        });
+      }
+
+      const address = input.source === 'MAPS' ? input.address ?? null : null;
+      const latitude = input.latitude ?? null;
+      const longitude = input.longitude ?? null;
+      const mapsUrl =
+        input.source === 'CURRENT'
+          ? getGoogleMapsUrl(`${input.latitude},${input.longitude}`)
+          : input.mapsUrl;
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const publicId = `LOC@${randomInt(0, 100_000_000).toString().padStart(8, '0')}`;
+
+      try {
+        return await prisma.savedLocation.create({
+          data: {
+            publicId,
+            shareId: randomBytes(16).toString('hex'),
+            visibility: input.visibility,
+            name: input.name,
+            description: input.description || null,
+            tags: input.tags,
+            images: input.images,
+            imagePositionX: input.imagePositionX,
+            imagePositionY: input.imagePositionY,
+            address,
+            mapsUrl,
+            latitude,
+            longitude,
+            userId: ctx.session.user.id,
+          },
+        });
+      } catch (error) {
+        if (!isUniqueConstraintError(error)) throw error;
+      }
+    }
+
+    throw new TRPCError({
+      code: 'CONFLICT',
+      message: 'Could not generate a unique location ID. Please try again.',
+    });
+  }),
 });

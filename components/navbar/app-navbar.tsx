@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { PanelLeftIcon, PanelLeftCloseIcon, SearchIcon, XIcon } from "lucide-react";
+import { PanelLeftIcon, PanelLeftCloseIcon, SearchIcon } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { DashboardCommand } from "@/components/navbar/app-command";
 import { useEffect, useState } from "react";
@@ -11,9 +11,6 @@ export const DashboardNavbar = () => {
   const { toggleSidebar, state, openMobile } = useSidebar();
   const isMobile = useIsMobile();
   const isSidebarExpanded = isMobile ? openMobile : state === "expanded";
-
-  const [search, setSearch] = useState("");
-  const handleSearchChange = (value: string) => setSearch(value);
 
   const [commandOpen, setCommandOpen] = useState(false);
 
@@ -41,13 +38,13 @@ export const DashboardNavbar = () => {
 
   return (
     <>
-      {!isMobile && <DashboardCommand open={commandOpen} setOpen={setCommandOpen} />}
+      <DashboardCommand open={commandOpen} setOpen={setCommandOpen} />
 
       <nav
         className={
           isMobile
-            ? "flex items-center gap-2 border-b bg-background px-3 py-3"
-            : "flex items-center px-4 py-3 border-b bg-background"
+            ? "flex items-center gap-2 border-b border-sidebar-border bg-sidebar px-3 py-3 text-sidebar-foreground"
+            : "flex items-center border-b border-sidebar-border bg-sidebar px-4 py-3 text-sidebar-foreground"
         }
       >
         <Button
@@ -67,28 +64,17 @@ export const DashboardNavbar = () => {
 
         <div className="flex flex-1 justify-center">
           {isMobile ? (
-            <div className="relative flex h-9 w-full max-w-55 items-center gap-2 rounded-md border border-gray-300 bg-background px-2 py-1 text-sm text-muted-foreground focus-within:ring-2 focus-within:ring-cyan-900 dark:border-gray-600">
-              <SearchIcon className="h-4 w-4 shrink-0 text-cyan-800 dark:text-cyan-400" />
-              <input
-                type="text"
-                value={search}
-                onChange={(event) => handleSearchChange(event.target.value)}
-                className="flex-1 bg-transparent outline-none text-sm text-cyan-800 dark:text-cyan-500 placeholder:text-muted-foreground dark:placeholder:text-muted-foreground"
-                style={{ fontSize: "16px" }} // prevent iOS zoom
-                placeholder="Search projects..."
-                aria-label="Search projects"
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => handleSearchChange("")}
-                  aria-label="Clear search"
-                  className="shrink-0 text-muted-foreground hover:text-foreground"
-                >
-                  <XIcon className="h-3.5 w-3.5" />
-                </button>
-              )}
-            </div>
+            <Button
+              className="h-9 w-full max-w-55 justify-start font-medium text-primary"
+              variant="outline"
+              size="sm"
+              onClick={() => setCommandOpen(true)}
+              aria-haspopup="dialog"
+              aria-expanded={commandOpen}
+            >
+              <SearchIcon className="h-4 w-4 shrink-0 text-primary" />
+              Search locations...
+            </Button>
           ) : (
             <Button
               className="h-9 w-170 justify-start font-normal text-muted-foreground hover:text-muted-foreground"
@@ -98,10 +84,10 @@ export const DashboardNavbar = () => {
               aria-haspopup="dialog"
               aria-expanded={commandOpen}
             >
-              <div className="flex items-center gap-2 px-2 py-1 rounded-md text-sm text-muted-foreground">
-                <SearchIcon className="h-4 w-4 text-cyan-800 dark:text-cyan-900" />
-                <span className="font-bold text-cyan-800 dark:text-cyan-650">
-                  Search...
+              <div className="flex items-center gap-2 rounded-md px-2 py-1 text-sm">
+                <SearchIcon className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-primary">
+                  Search locations...
                 </span>
               </div>
 

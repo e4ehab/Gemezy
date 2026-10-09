@@ -1,18 +1,26 @@
-import { Suspense } from 'react';
-import { HydrateClient } from '@/trpc/server';
-import { prefetchLocations } from '@/features/locations/server/prefetch';
-import { Locations } from '@/features/locations/components/locations';
-import { requireAuth } from '@/lib/auth-utils';
+import { ErrorBoundary } from "react-error-boundary";
+import { Suspense } from "react";
+import { LocationsView, LocationsViewError, LocationsViewLoading } from "@/features/locations/components/locations-view";
+import { prefetchLocations } from "@/features/locations/server/prefetch";
+import { requireAuth } from "@/lib/auth-utils";
+import { HydrateClient } from "@/trpc/server";
 
-export default async function Page() {
+type LocationsPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function LocationsPage({ searchParams }: LocationsPageProps) {
   await requireAuth();
-  prefetchLocations({ page: 1, pageSize: 10 });
+  const rawSearch = (await searchParams).search;
+  const search = typeof rawSearch === "string" ? rawSearch.trim() : "";
+  prefetchLocations(search || undefined);
 
   return (
     <HydrateClient>
-      <h1>Welcome to GemEzy</h1>
-      <Suspense fallback={<p>Loading users...</p>}>
-        <Locations />
+      <Suspense fallback={<LocationsViewLoading />}>
+        <ErrorBoundary FallbackComponent={LocationsViewError}>
+          <LocationsView />
+        </ErrorBoundary>
       </Suspense>
     </HydrateClient>
   );

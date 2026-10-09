@@ -4,12 +4,9 @@ import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
-import { isLocationVisibility, LOCATION_VISIBILITIES } from '@/features/profile/constants';
 import {
   useSuspenseProfile,
   useUpdateProfileName,
-  useUpdateProfileVisibility,
 } from '@/features/profile/hooks/use-profile';
 import {
   CalendarDaysIcon,
@@ -20,38 +17,10 @@ import {
   MessageCircleIcon,
   UserRoundIcon,
 } from 'lucide-react';
-import { toast } from 'sonner';
-
-const visibilityOptions = [
-  {
-    value: 'PUBLIC',
-    label: 'Public',
-    description: 'Anyone can discover and view your saved locations.',
-  },
-  {
-    value: 'PRIVATE',
-    label: 'Private',
-    description: 'Only you can see your locations.',
-  },
-  {
-    value: 'SHARED',
-    label: 'Shared',
-    description: 'Only specific people you share it with can see it.',
-  },
-  {
-    value: 'Unlisted',
-    label: 'Unlisted',
-    description: 'Anyone with the direct link or location ID can view it.',
-  },
-] satisfies {
-  value: (typeof LOCATION_VISIBILITIES)[number];
-  label: string;
-  description: string;
-}[];
+import { toast } from '@/components/ui/toast';
 
 export function Profile() {
   const { data: profile } = useSuspenseProfile();
-  const updateVisibility = useUpdateProfileVisibility();
   const updateName = useUpdateProfileName();
   const [name, setName] = useState(profile.name);
   const initials = profile.name
@@ -71,18 +40,6 @@ export function Profile() {
   const copyAccountId = async () => {
     await navigator.clipboard.writeText(profile.publicId);
     toast.success('Account ID copied');
-  };
-
-  const changeVisibility = (value: string) => {
-    if (isLocationVisibility(value)) {
-      updateVisibility.mutate(
-        { visibility: value },
-        {
-          onSuccess: () => toast.success('Location visibility updated'),
-          onError: () => toast.error('Could not update location visibility'),
-        },
-      );
-    }
   };
 
   const saveName = (event: React.FormEvent<HTMLFormElement>) => {
@@ -125,44 +82,6 @@ export function Profile() {
             {profile.emailVerified ? <><CheckIcon /> Verified email</> : 'Email not verified'}
           </Badge>
         </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Location visibility</h2>
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border bg-card p-4 text-card-foreground">
-          <div className="min-w-0 flex-1 space-y-1">
-            <label htmlFor="location-visibility" className="font-medium">
-              Who can see your location?
-            </label>
-          </div>
-          <NativeSelect
-            id="location-visibility"
-            aria-label="Location visibility"
-            value={profile.visibility}
-            disabled={updateVisibility.isPending}
-            onChange={(event) => changeVisibility(event.currentTarget.value)}
-          >
-            {visibilityOptions.map(({ value, label }) => (
-              <NativeSelectOption key={value} value={value}>
-                {label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-        </div>
-        <ul className="space-y-2 rounded-lg border bg-card p-4 text-sm text-card-foreground">
-          {visibilityOptions.map(({ value, label, description }) => {
-            const selected = profile.visibility === value;
-
-            return (
-              <li key={value} className="flex flex-wrap gap-x-2">
-                <span className={selected ? 'font-semibold' : 'font-medium'}>
-                  {label}{selected ? ' (current)' : ''}
-                </span>
-                <span className="text-muted-foreground">{description}</span>
-              </li>
-            );
-          })}
-        </ul>
       </section>
 
       <section className="space-y-4">

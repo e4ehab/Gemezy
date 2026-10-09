@@ -1,4 +1,5 @@
 // app/(dashboard)/layout.tsx
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { DashboardNavbar } from "@/components/navbar/app-navbar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -8,7 +9,9 @@ const Layout = ({ children }: { children: React.ReactNode; }) => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-accent/20">
-        <DashboardNavbar />
+        <Suspense fallback={<div className="h-14 border-b border-sidebar-border bg-sidebar" aria-label="Loading navigation" />}>
+          <DashboardNavbar />
+        </Suspense>
         {children}
       </SidebarInset>
     </SidebarProvider>

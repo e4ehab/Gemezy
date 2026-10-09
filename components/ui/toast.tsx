@@ -7,7 +7,20 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
-const toast = ToastPrimitive.createToastManager()
+const toastManager = ToastPrimitive.createToastManager()
+const toast = {
+  ...toastManager,
+  success: (title: string, description?: string) =>
+    toastManager.add({ title, description, type: "success" }),
+  error: (title: string, description?: string) =>
+    toastManager.add({ title, description, type: "error", priority: "high" }),
+  info: (title: string, description?: string) =>
+    toastManager.add({ title, description, type: "info" }),
+  warning: (title: string, description?: string) =>
+    toastManager.add({ title, description, type: "warning" }),
+  loading: (title: string, description?: string) =>
+    toastManager.add({ title, description, type: "loading", timeout: 0 }),
+};
 
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />
@@ -199,11 +212,11 @@ function ToastList() {
 
 function Toaster({
   children,
-  toastManager = toast,
+  toastManager: manager = toastManager,
   ...props
 }: ToastPrimitive.Provider.Props) {
   return (
-    <ToastProvider toastManager={toastManager} {...props}>
+    <ToastProvider toastManager={manager} {...props}>
       {children}
       <ToastPortal>
         <ToastViewport>
