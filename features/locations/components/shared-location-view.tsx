@@ -45,7 +45,7 @@ export function SharedLocationView({ location }: { location: SharedLocation }) {
   };
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-4xl space-y-6 px-4 py-10 sm:px-6">
+    <main className="mx-auto min-h-screen w-full max-w-4xl space-y-5 px-3 py-6 sm:space-y-6 sm:px-6 sm:py-10">
       <Card className="overflow-hidden rounded-3xl border-border bg-card text-card-foreground shadow-xl shadow-black/10">
         <div className="relative flex aspect-[4/3] max-h-[32rem] w-full items-center justify-center overflow-hidden bg-linear-to-br from-primary/15 via-accent/25 to-muted sm:aspect-[2/1]">
           {images[0] ? (
@@ -80,19 +80,19 @@ export function SharedLocationView({ location }: { location: SharedLocation }) {
             </div>
           )}
         </div>
-        <CardHeader className="gap-3 px-6 pt-6 sm:px-8 sm:pt-8">
+        <CardHeader className="gap-3 px-4 pt-5 sm:px-8 sm:pt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Shared location
           </p>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{location.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-4xl">{location.name}</h1>
         </CardHeader>
-        <CardContent className="space-y-5 px-6 pb-7 sm:px-8">
+        <CardContent className="space-y-5 px-4 pb-5 sm:px-8 sm:pb-7">
           <p className="text-sm text-muted-foreground">
             Shared with you on Gemezy. Personal notes, tags, and exact coordinates are kept private.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
             <a
-              className={buttonVariants()}
+              className={`${buttonVariants()} min-h-11 w-full sm:w-auto`}
               href={getGoogleMapsUrl(location.mapsUrl)}
               target="_blank"
               rel="noopener noreferrer"
@@ -100,14 +100,14 @@ export function SharedLocationView({ location }: { location: SharedLocation }) {
               Open in Google Maps
               <ArrowUpRightIcon />
             </a>
-            <Button type="button" variant="outline" onClick={copyLink}>
+            <Button type="button" variant="outline" className="min-h-11 w-full sm:w-auto" onClick={copyLink}>
               <CopyIcon />
               Copy link
             </Button>
             <Button
               type="button"
               variant="outline"
-              className="border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+              className="min-h-11 w-full border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300 sm:w-auto"
               onClick={shareOnWhatsApp}
             >
               <MessageCircleIcon />

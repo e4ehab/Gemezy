@@ -48,6 +48,13 @@ Locations are private by default. Change an individual location to **Unlisted** 
 
 TODOS
 ------
-. Improve Explore as it grows. Add search, sorting, and pagination rather than loading every public location at once.
+- Improve Explore as it grows. Add search, sorting, and pagination rather than loading every public location at once.
 
-. enhance the searching methodology
+- enhance the searching methodology
+
+- add notifaction center to the navbar and red dot when new netofification is here
+imagine your friend added a new location to thier list , it will pop up
+
+- add the functionality of sending the location to my friends
+
+- add friend page to the pages

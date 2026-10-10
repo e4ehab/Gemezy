@@ -141,7 +141,10 @@ export function LocationForm() {
       <LocationVisibilityField value={visibility} onChange={setVisibility} />
 
       <div className="flex flex-col-reverse justify-between gap-3 sm:flex-row sm:items-center">
-        <Link href="/locations" className={buttonVariants({ variant: "ghost" })}>
+        <Link
+          href="/locations"
+          className={`${buttonVariants({ variant: "ghost" })} min-h-11 w-full justify-start sm:w-auto`}
+        >
           <ArrowLeftIcon />
           Cancel
         </Link>
@@ -154,6 +157,7 @@ export function LocationForm() {
             hasInvalidTags ||
             (source === "MAPS" && !isGoogleMapsShareUrl(mapsShareUrl.trim()))
           }
+          className="min-h-11 w-full sm:w-auto"
         >
           {isUploadingImages ? (
             <LoaderCircleIcon className="animate-spin" />

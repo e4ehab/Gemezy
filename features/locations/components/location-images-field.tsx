@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,7 @@ export function LocationImagesField({
   imagePositionY,
   onImagePositionChange,
 }: LocationImagesFieldProps) {
+  const isMobile = useIsMobile();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const previewUrls = useRef(new Set<string>());
   const mainImage = images[0];
@@ -102,13 +104,15 @@ export function LocationImagesField({
   };
 
   return (
-    <section className="space-y-5 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-foreground/10 sm:p-7">
+    <section className="space-y-5 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-foreground/10 sm:p-7">
       <div>
         <h2 className="font-semibold">
           Photos <span className="font-normal text-muted-foreground">(optional)</span>
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Drag photos to reorder them. The first photo is the main card image. Add up to{" "}
+          {isMobile
+            ? "Use the arrow buttons to reorder photos. The first photo is the main card image. Add up to "
+            : "Drag photos or use the arrow buttons to reorder them. The first photo is the main card image. Add up to "}
           {MAX_LOCATION_IMAGES} photos, up to 5 MB each.
         </p>
       </div>
@@ -144,7 +148,7 @@ export function LocationImagesField({
             return (
               <li
                 key={image.id}
-                draggable
+                draggable={!isMobile}
                 onDragStart={() => setDraggingId(image.id)}
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={(event) => {
@@ -154,7 +158,7 @@ export function LocationImagesField({
                 }}
                 onDragEnd={() => setDraggingId(null)}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg border bg-background px-3 py-2",
+                  "flex flex-wrap items-center gap-2 rounded-lg border bg-background px-3 py-2 sm:flex-nowrap",
                   draggingId === image.id && "opacity-50",
                 )}
               >
@@ -171,7 +175,10 @@ export function LocationImagesField({
                 </span>
                 <GripVerticalIcon
                   aria-hidden="true"
-                  className="size-4 shrink-0 cursor-grab text-muted-foreground"
+                  className={cn(
+                    "size-4 shrink-0 cursor-grab text-muted-foreground",
+                    isMobile && "hidden",
+                  )}
                 />
                 <span className="min-w-0 flex-1 truncate text-sm">
                   {index === 0 && (
@@ -190,7 +197,8 @@ export function LocationImagesField({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-xs"
+                    size={isMobile ? "icon-lg" : "icon-xs"}
+                    className={cn(isMobile && "size-11")}
                     aria-label={`Move ${imageName} earlier`}
                     disabled={index === 0}
                     onClick={() => moveBy(index, -1)}
@@ -200,7 +208,8 @@ export function LocationImagesField({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-xs"
+                    size={isMobile ? "icon-lg" : "icon-xs"}
+                    className={cn(isMobile && "size-11")}
                     aria-label={`Move ${imageName} later`}
                     disabled={index === images.length - 1}
                     onClick={() => moveBy(index, 1)}
@@ -210,7 +219,8 @@ export function LocationImagesField({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-xs"
+                    size={isMobile ? "icon-lg" : "icon-xs"}
+                    className={cn(isMobile && "size-11")}
                     aria-label={`Remove ${imageName}`}
                     onClick={() => {
                       if (image.type === "file") {

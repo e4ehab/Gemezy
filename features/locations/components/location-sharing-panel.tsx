@@ -140,7 +140,7 @@ export function LocationSharingPanel({
 
   return (
     <section className="space-y-4 rounded-2xl border border-border bg-muted/30 p-4 sm:p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <CurrentIcon className="size-5" />
@@ -158,7 +158,7 @@ export function LocationSharingPanel({
           onValueChange={handleVisibilityChange}
           disabled={updateVisibility.isPending}
         >
-          <SelectTrigger className="w-36" aria-label="Location sharing visibility">
+          <SelectTrigger className="min-h-11 w-full sm:w-36" aria-label="Location sharing visibility">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -179,8 +179,8 @@ export function LocationSharingPanel({
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={copyShareLink} disabled={!isShareable}>
+      <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
+        <Button type="button" variant="outline" className="min-h-11 w-full sm:w-auto" onClick={copyShareLink} disabled={!isShareable}>
           <CopyIcon />
           Copy share link
         </Button>
@@ -189,7 +189,7 @@ export function LocationSharingPanel({
           variant="outline"
           onClick={shareOnWhatsApp}
           disabled={!isShareable}
-          className="border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300"
+          className="min-h-11 w-full border-emerald-500/30 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-300 sm:w-auto"
         >
           <MessageCircleIcon />
           Share via WhatsApp
@@ -197,7 +197,7 @@ export function LocationSharingPanel({
         <Dialog open={isQrOpen} onOpenChange={setIsQrOpen}>
           <DialogTrigger
             render={
-              <Button type="button" variant="outline" disabled={!isShareable}>
+              <Button type="button" variant="outline" className="min-h-11 w-full sm:w-auto" disabled={!isShareable}>
                 <QrCodeIcon />
                 Show QR code
               </Button>

@@ -29,7 +29,7 @@ export default async function EditLocationPage({
 
   return (
     <HydrateClient>
-      <main className="mx-auto w-full max-w-3xl space-y-7 p-5 sm:p-8 lg:p-10">
+      <main className="mx-auto w-full max-w-3xl space-y-6 p-4 sm:space-y-7 sm:p-8 lg:p-10">
         <div className="space-y-5">
           <Link
             href={`/locations/${slug}`}

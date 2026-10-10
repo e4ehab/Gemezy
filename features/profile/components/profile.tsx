@@ -61,21 +61,21 @@ export function Profile() {
   };
 
   return (
-    <main className="mx-auto w-full max-w-4xl space-y-8 p-6 md:p-10">
+    <main className="mx-auto w-full max-w-4xl space-y-6 p-4 sm:space-y-8 sm:p-6 md:p-10">
       <header className="space-y-2">
         <p className="text-sm font-medium text-muted-foreground">Account</p>
-        <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Profile</h1>
         <p className="text-muted-foreground">Your personal and account details.</p>
       </header>
 
-      <section className="rounded-lg border bg-card p-6 text-card-foreground">
-        <div className="flex flex-wrap items-center gap-5">
-          <Avatar className="size-20 border border-border">
+      <section className="rounded-lg border bg-card p-4 text-card-foreground sm:p-6">
+        <div className="flex flex-wrap items-center gap-4 sm:gap-5">
+          <Avatar className="size-16 border border-border sm:size-20">
             <AvatarImage src={profile.image ?? undefined} alt={profile.name} />
             <AvatarFallback className="text-xl font-semibold">{initials}</AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1 space-y-1">
-            <h2 className="truncate text-2xl font-semibold">{profile.name}</h2>
+            <h2 className="truncate text-xl font-semibold sm:text-2xl">{profile.name}</h2>
             <p className="truncate text-muted-foreground">{profile.email}</p>
           </div>
           <Badge variant={profile.emailVerified ? 'default' : 'secondary'}>
@@ -88,8 +88,8 @@ export function Profile() {
         <h2 className="text-lg font-semibold">Account details</h2>
         <div className="divide-y rounded-lg border bg-card text-card-foreground">
           <form onSubmit={saveName} className="flex flex-wrap items-end gap-3 p-4">
-            <UserRoundIcon className="mb-1 size-5 text-muted-foreground" />
-            <div className="min-w-48 flex-1 space-y-1.5">
+            <UserRoundIcon className="mb-1 hidden size-5 text-muted-foreground sm:block" />
+            <div className="w-full min-w-0 flex-1 space-y-1.5 sm:min-w-48">
               <label htmlFor="profile-name" className="text-sm text-muted-foreground">
                 Display name
               </label>
@@ -104,11 +104,12 @@ export function Profile() {
                 value={name}
                 onChange={(event) => setName(event.currentTarget.value)}
                 disabled={updateName.isPending}
-                className="h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-9"
               />
             </div>
             <Button
               type="submit"
+              className="min-h-11 w-full sm:w-auto"
               disabled={updateName.isPending || name.trim().length < 2 || name.trim() === profile.name}
             >
               {updateName.isPending ? 'Saving...' : 'Save name'}
@@ -118,12 +119,13 @@ export function Profile() {
             <KeyRoundIcon className="size-5 text-muted-foreground" />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-muted-foreground">Gemezy account ID</p>
-              <p className="font-mono font-medium">{profile.publicId}</p>
+              <p className="break-all font-mono font-medium">{profile.publicId}</p>
             </div>
             <Button
               type="button"
               variant="ghost"
               size="icon"
+              className="size-11 sm:size-8"
               title="Copy account ID"
               aria-label="Copy account ID"
               onClick={copyAccountId}
@@ -131,7 +133,7 @@ export function Profile() {
               <CopyIcon />
             </Button>
             <a
-              className={buttonVariants({ variant: 'outline' })}
+              className={`${buttonVariants({ variant: 'outline' })} min-h-11 w-full sm:w-auto`}
               href={whatsappShareUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -140,21 +142,21 @@ export function Profile() {
               Share on WhatsApp
             </a>
           </div>
-          <div className="flex items-center gap-3 p-4">
+          <div className="flex min-w-0 items-start gap-3 p-4">
             <MailIcon className="size-5 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Email address</p>
               <p className="font-medium">{profile.email}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4">
+          <div className="flex min-w-0 items-start gap-3 p-4">
             <CalendarDaysIcon className="size-5 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Member since</p>
               <p className="font-medium">{createdAt}</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4">
+          <div className="flex min-w-0 items-start gap-3 p-4">
             <KeyRoundIcon className="size-5 text-muted-foreground" />
             <div className="min-w-0">
               <p className="text-sm text-muted-foreground">Sign-in methods</p>
