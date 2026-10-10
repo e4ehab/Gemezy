@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -24,8 +25,10 @@ export function LocationDetailsFields({
   tags,
   hasInvalidTags,
 }: LocationDetailsFieldsProps) {
+  const isMobile = useIsMobile();
+
   return (
-    <section className="space-y-5 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-foreground/10 sm:p-7">
+    <section className="space-y-5 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-foreground/10 sm:p-7">
       <div>
         <h2 className="font-semibold">Give it a name</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -38,13 +41,14 @@ export function LocationDetailsFields({
         </label>
         <Input
           id="location-name"
+          className="min-h-11"
           value={name}
           onChange={(event) => onNameChange(event.currentTarget.value)}
           placeholder="e.g. Weekend coffee spot"
           minLength={2}
           maxLength={100}
           required
-          autoFocus
+          autoFocus={!isMobile}
         />
       </div>
       <div className="space-y-2">
@@ -53,6 +57,7 @@ export function LocationDetailsFields({
         </label>
         <Textarea
           id="location-description"
+          className="min-h-24"
           value={description}
           onChange={(event) => onDescriptionChange(event.currentTarget.value)}
           placeholder="What makes this place special?"
@@ -68,6 +73,7 @@ export function LocationDetailsFields({
         </label>
         <Input
           id="location-tags"
+          className="min-h-11"
           value={tagsInput}
           onChange={(event) => onTagsInputChange(event.currentTarget.value)}
           placeholder="restaurant, brunch, date night"

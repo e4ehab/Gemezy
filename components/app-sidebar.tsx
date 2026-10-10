@@ -65,12 +65,15 @@ const collapsedIconButton =
 export const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const { data: session } = authClient.useSession();
   const profileName = session?.user.name || "Profile";
   const profileInitial = profileName.charAt(0).toUpperCase();
   const isCollapsed = state === "collapsed";
+  const closeMobileSidebar = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -106,6 +109,7 @@ export const AppSidebar = () => {
               tooltip="Gemezy"
               isActive={false}
               render={<Link href="/locations" prefetch />}
+              onClick={closeMobileSidebar}
               className={cn(
                 "h-14 rounded-xl px-3 text-sidebar-foreground hover:bg-sidebar-accent",
                 collapsedIconButton,
@@ -142,6 +146,7 @@ export const AppSidebar = () => {
                     tooltip={item.title}
                     isActive={isPathActive(pathname, item.url)}
                     render={<Link href={item.url} prefetch />}
+                    onClick={closeMobileSidebar}
                     className={navButtonClass}
                   >
                     <item.icon />
@@ -156,7 +161,7 @@ export const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="gap-1.5 p-3 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:pb-4">
+      <SidebarFooter className="gap-1.5 p-3 pb-[max(env(safe-area-inset-bottom),1rem)] group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:pb-4">
         <div className="px-1 pb-1 group-data-[collapsible=icon]:px-0">
           <Separator className="bg-sidebar-border group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:w-8" />
         </div>
@@ -166,6 +171,7 @@ export const AppSidebar = () => {
               tooltip={profileName}
               isActive={isPathActive(pathname, "/profile")}
               render={<Link href="/profile" prefetch />}
+              onClick={closeMobileSidebar}
               className={cn(
                 navButtonClass,
                 "group-data-[collapsible=icon]:rounded-full",

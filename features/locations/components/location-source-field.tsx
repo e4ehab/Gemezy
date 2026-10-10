@@ -89,8 +89,8 @@ export function LocationSourceField({
   };
 
   return (
-    <section className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-foreground/10 sm:p-7">
-      <div className="mb-6 flex items-center gap-3">
+    <section className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-foreground/10 sm:p-7">
+      <div className="mb-5 flex items-center gap-3 sm:mb-6">
         <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <MapPinIcon className="size-5" />
         </div>
@@ -144,7 +144,7 @@ export function LocationSourceField({
 
       {source === "CURRENT" ? (
         <div className="mt-5 rounded-xl border border-dashed bg-muted/30 p-4 sm:p-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
             <div className="flex items-start gap-3">
               <NavigationIcon className="mt-0.5 size-5 shrink-0 text-primary" />
               <div>
@@ -163,6 +163,7 @@ export function LocationSourceField({
               variant="outline"
               onClick={detectCurrentLocation}
               disabled={isLocating}
+              className="min-h-11 w-full sm:w-auto"
             >
               <CrosshairIcon className={cn(isLocating && "animate-spin")} />
               {isLocating
@@ -180,6 +181,7 @@ export function LocationSourceField({
           </label>
           <Input
             id="maps-share-url"
+            className="min-h-11"
             type="url"
             inputMode="url"
             value={mapsShareUrl}

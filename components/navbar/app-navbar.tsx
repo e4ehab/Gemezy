@@ -48,7 +48,7 @@ export const DashboardNavbar = () => {
         }
       >
         <Button
-          className="h-9 w-9 transition-colors aria-expanded:bg-accent aria-expanded:text-accent-foreground"
+          className="h-11 w-11 shrink-0 transition-colors aria-expanded:bg-accent aria-expanded:text-accent-foreground sm:h-9 sm:w-9"
           variant="outline"
           onClick={toggleSidebar}
           aria-label={isSidebarExpanded ? "Close navigation" : "Open navigation"}
@@ -65,7 +65,7 @@ export const DashboardNavbar = () => {
         <div className="flex flex-1 justify-center">
           {isMobile ? (
             <Button
-              className="h-9 w-full max-w-55 justify-start font-medium text-primary"
+              className="h-11 w-full max-w-55 justify-start font-medium text-primary"
               variant="outline"
               size="sm"
               onClick={() => setCommandOpen(true)}

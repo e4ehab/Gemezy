@@ -82,9 +82,9 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
   };
 
   return (
-    <div className="scrollbar-hidden w-full min-h-screen overflow-y-auto overscroll-y-contain">
-      <div className="w-full px-4 py-7 sm:px-6 lg:px-10">
-        <div className="mx-auto w-full max-w-6xl space-y-6">
+    <div className="scrollbar-hidden min-h-screen w-full overflow-y-auto overscroll-y-contain">
+      <div className="w-full px-3 py-5 sm:px-6 sm:py-7 lg:px-10">
+        <div className="mx-auto w-full max-w-6xl space-y-5 sm:space-y-6">
           <Link
             href="/locations"
             className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "-ml-2")}
@@ -139,7 +139,7 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
               )}
             </div>
 
-            <CardHeader className="gap-3 px-6 pt-6 sm:px-8 sm:pt-8">
+            <CardHeader className="gap-3 px-4 pt-5 sm:px-8 sm:pt-8">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-primary">
                   Saved location
@@ -148,12 +148,12 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
                   {location.publicId}
                 </span>
               </div>
-              <h1 className="text-3xl font-semibold tracking-tight text-card-foreground sm:text-4xl">
+              <h1               className="text-2xl font-semibold tracking-tight text-card-foreground sm:text-4xl">
                 {location.name}
               </h1>
             </CardHeader>
 
-            <CardContent className="space-y-6 px-6 pb-7 sm:px-8">
+            <CardContent className="space-y-5 px-4 pb-5 sm:space-y-6 sm:px-8 sm:pb-7">
               {location.description && (
                 <p className="max-w-3xl whitespace-pre-wrap text-sm leading-7 text-muted-foreground sm:text-base">
                   {location.description}
@@ -203,10 +203,10 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
                 Saved {createdAt}
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                 <Link
                   href={`/locations/${slug}/edit`}
-                  className={buttonVariants({ variant: "outline" })}
+                  className={`${buttonVariants({ variant: "outline" })} min-h-11 w-full sm:w-auto`}
                 >
                   <PencilIcon />
                   Edit location
@@ -221,7 +221,7 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
                     render={
                       <button
                         type="button"
-                        className={buttonVariants({ variant: "destructive" })}
+                        className={`${buttonVariants({ variant: "destructive" })} min-h-11 w-full sm:w-auto`}
                         disabled={deleteLocation.isPending}
                       />
                     }
@@ -260,7 +260,7 @@ export function LocationIdView({ slug }: LocationIdViewProps) {
                   </AlertDialogContent>
                 </AlertDialog>
                 <a
-                  className={buttonVariants({ className: "shadow-md shadow-primary/15" })}
+                  className={`${buttonVariants({ className: "shadow-md shadow-primary/15" })} min-h-11 w-full sm:w-auto`}
                   href={getGoogleMapsUrl(location.mapsUrl)}
                   target="_blank"
                   rel="noopener noreferrer"

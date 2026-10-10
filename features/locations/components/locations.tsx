@@ -8,10 +8,10 @@ import type { AppRouter } from "@/trpc/routers/_app";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getGoogleMapsUrl, getLocationSharePath } from "@/features/locations/utils";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowUpRightIcon,
   CopyIcon,
-  FolderOpenDotIcon,
   Birdhouse,
   MapPinIcon,
   MessageCircleIcon,
@@ -27,6 +27,8 @@ export function Locations({
   locations: SavedLocation[];
   searchQuery: string;
 }) {
+  const isMobile = useIsMobile();
+
   const copyLocationId = async (publicId: string) => {
     try {
       await navigator.clipboard.writeText(publicId);
@@ -81,7 +83,7 @@ export function Locations({
   }
 
   return (
-    <div className="grid auto-rows-fr grid-cols-1 gap-6 pb-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid auto-rows-fr grid-cols-1 gap-4 pb-8 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 xl:grid-cols-4">
       {locations.map((location) => {
         const images = location.images ?? [];
 
@@ -137,7 +139,7 @@ export function Locations({
             </div>
           </Link>
 
-          <div className="flex grow flex-col gap-3 p-4">
+          <div className="flex grow flex-col gap-3 p-4 sm:p-5">
             <Link
               href={`/locations/${encodeURIComponent(location.slug)}`}
               className="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -171,7 +173,7 @@ export function Locations({
             </div>
           </div>
 
-          <footer className="flex shrink-0 items-center justify-between gap-2 px-4 pb-4 text-sm">
+          <footer className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 pb-4 text-sm sm:flex-nowrap">
             <div className="flex min-w-0 items-center gap-1">
               <span className="truncate font-mono text-xs text-sidebar-foreground/50">
                 {location.publicId}
@@ -179,8 +181,11 @@ export function Locations({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
-                className="shrink-0 text-sidebar-foreground/50 hover:text-sidebar-foreground"
+                size={isMobile ? "icon-lg" : "icon-xs"}
+                className={cn(
+                  "shrink-0 text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                  isMobile && "size-11",
+                )}
                 title="Copy location ID"
                 aria-label={`Copy location ID ${location.publicId}`}
                 onClick={() => copyLocationId(location.publicId)}
@@ -193,7 +198,10 @@ export function Locations({
                 href={getGoogleMapsUrl(location.mapsUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-sm text-sidebar-foreground/60 outline-none transition-colors hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(
+                  "rounded-sm text-sidebar-foreground/60 outline-none transition-colors hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-ring",
+                  isMobile && "flex size-11 items-center justify-center",
+                )}
                 aria-label={`Open ${location.name} in Google Maps`}
                 title="Open in Google Maps"
               >
@@ -202,8 +210,11 @@ export function Locations({
               <Button
                 type="button"
                 variant="ghost"
-                size="icon-xs"
-                className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
+                size={isMobile ? "icon-lg" : "icon-xs"}
+                className={cn(
+                  "text-sidebar-foreground/60 hover:text-sidebar-foreground",
+                  isMobile && "size-11",
+                )}
                 title="Share via WhatsApp"
                 aria-label={`Share ${location.name} via WhatsApp`}
                 onClick={() => shareLocationOnWhatsApp(location)}
@@ -212,7 +223,7 @@ export function Locations({
               </Button>
               <Link
                 href={`/locations/${encodeURIComponent(location.slug)}`}
-                className="flex items-center gap-1 font-medium text-sidebar-accent transition-colors duration-300 hover:text-primary md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+                className="flex min-h-11 items-center gap-1 font-medium text-sidebar-accent transition-colors duration-300 hover:text-primary md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
               >
                 View
                 <ArrowUpRightIcon className="size-4" />

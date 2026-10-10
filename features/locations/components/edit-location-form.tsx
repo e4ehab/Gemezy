@@ -169,7 +169,10 @@ export function EditLocationForm({ slug }: { slug: string }) {
       <div className="flex flex-col-reverse justify-between gap-3 sm:flex-row sm:items-center">
         <Link
           href={`/locations/${slug}`}
-          className={cn(buttonVariants({ variant: "ghost" }), "-ml-2")}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "min-h-11 w-full justify-start sm:-ml-2 sm:w-auto",
+          )}
         >
           <ArrowLeftIcon />
           Cancel
@@ -183,6 +186,7 @@ export function EditLocationForm({ slug }: { slug: string }) {
             hasInvalidTags ||
             (source === "MAPS" && !isGoogleMapsShareUrl(mapsShareUrl.trim()))
           }
+          className="min-h-11 w-full sm:w-auto"
         >
           {updateLocation.isPending || isUploadingImages ? (
             <LoaderCircleIcon className="animate-spin" />

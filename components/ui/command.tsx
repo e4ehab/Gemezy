@@ -138,13 +138,21 @@ function CommandInput({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  const isMobile = useIsMobile()
+
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+    <div data-slot="command-input-wrapper" className="p-2 pb-0 sm:p-1 sm:pb-0">
+      <InputGroup
+        className={cn(
+          "rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!",
+          isMobile ? "h-11!" : "h-8!",
+        )}
+      >
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(
             "w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+            isMobile && "text-base",
             className
           )}
           {...props}

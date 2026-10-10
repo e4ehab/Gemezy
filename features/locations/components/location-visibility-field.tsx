@@ -35,14 +35,16 @@ export function LocationVisibilityField({
 }) {
   const Icon = icons[value];
   return (
-    <section className="space-y-3 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm sm:p-6">
-      <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Icon className="size-5" />
-        </span>
-        <div className="min-w-0 flex-1 space-y-1">
-          <h2 className="font-semibold">Location visibility</h2>
-          <p className="text-sm text-muted-foreground">{descriptions[value]}</p>
+    <section className="space-y-3 rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm sm:p-6">
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-start">
+        <div className="flex min-w-0 items-start gap-3">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1 space-y-1">
+            <h2 className="font-semibold">Location visibility</h2>
+            <p className="text-sm text-muted-foreground">{descriptions[value]}</p>
+          </div>
         </div>
         <Select
           value={value}
@@ -58,7 +60,7 @@ export function LocationVisibilityField({
           }}
           disabled={disabled}
         >
-          <SelectTrigger className="w-36" aria-label="Location visibility">
+          <SelectTrigger className="min-h-11 w-full sm:w-36" aria-label="Location visibility">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
